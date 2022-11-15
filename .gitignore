@@ -1,0 +1,15 @@
+node_modules/
+src/generated/
+*.env*
+*.db
+
+# Tokens - Node
+tokens/node_modules
+tokens/.env
+tokens/coverage
+tokens/coverage.json
+tokens/typechain
+
+# Tokens - Hardhat
+tokens/cache
+tokens/artifacts
