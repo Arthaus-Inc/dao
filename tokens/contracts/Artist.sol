@@ -1,13 +1,13 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.4;
 
-import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
+import "@openzeppelin/contracts/token/ERC1155/ERC1155.sol";
 import "@openzeppelin/contracts/utils/Strings.sol";
 
 /**
- * @dev Implementation of a simple NFT, using Tableland to host metadata in a two table setup.
+ * @dev Implementation of Arthaus Artist Patron token.
  */
-contract TwoTablesNFT is ERC721 {
+contract Artist is ERC1155 {
     // For demonstration purposes, some of these storage variables are set as `public`
     // This is not necessarily a best practice but makes it easy to call public getters
 
@@ -15,19 +15,20 @@ contract TwoTablesNFT is ERC721 {
     // This will use the Tableland gateway and query: https://testnet.tableland.network/query?mode=list&s=
     // See the `query?mode=list&s=` appended -- a SQL query `s` and mode to format to ERC721 standard
     string public baseURIString;
+
     /// The name of the main metadata table in Tableland
     // Schema: id int primary key, name text, description text, image text
     string public mainTable;
+
     /// The name of the attributes table in Tableland
     // Schema: main_id int not null, trait_type text not null, value text
     string public attributesTable;
+
     /// A token counter, to track NFT tokenIds
     uint256 private _tokenIdCounter;
-    /// A max number of tokens
-    uint256 private _maxTokens;
 
     /**
-     * @dev Initialize TableNFT
+     * @dev Initialize Artist Contract
      * baseURI - Set the contract's base URI to the Tableland gateway
      * _mainTable - The name of the 'main' table for NFT metadata
      * _attributesTable - The corresponding 'attributes' table
@@ -36,13 +37,13 @@ contract TwoTablesNFT is ERC721 {
         string memory baseURI,
         string memory _mainTable,
         string memory _attributesTable
-    ) ERC721("TwoTablesNFT", "TTNFT") {
+    ) ERC1155("") {
         // Initialize with token counter at zero
         _tokenIdCounter = 0;
-        // The max number of NFTs in this tutorial
-        _maxTokens = 2;
+
         // Set the baseURI to the Tableland gateway
         baseURIString = baseURI;
+
         // Set the table names
         mainTable = _mainTable;
         attributesTable = _attributesTable;
@@ -56,27 +57,17 @@ contract TwoTablesNFT is ERC721 {
     }
 
     /**
-     *  @dev Returns the total number of tokens in existence.
-     */
-    function totalSupply() public view returns (uint256) {
-        return _maxTokens;
-    }
-
-    /**
      *  @dev Must override the default implementation, which simply appends a `tokenId` to _baseURI.
      *  tokenId - The id of the NFT token that is being requested
      */
-    function tokenURI(uint256 tokenId)
+    function uri(uint256 tokenId)
         public
         view
         virtual
         override
         returns (string memory)
     {
-        require(
-            _exists(tokenId),
-            "ERC721Metadata: URI query for nonexistent token"
-        );
+        // Set base URI
         string memory baseURI = _baseURI();
 
         if (bytes(baseURI).length == 0) {
@@ -130,14 +121,10 @@ contract TwoTablesNFT is ERC721 {
     }
 
     /**
-     * @dev Mint an NFT, incrementing the `_tokenIdCounter` upon each call.
+     * @dev Mint an Artist Patron token - using artist ID as token ID reference. Mints to the sender.
      */
-    function mint() public {
-        require(
-            _tokenIdCounter < _maxTokens,
-            "Maximum number of tokens have been minted"
-        );
-        _safeMint(msg.sender, _tokenIdCounter);
-        _tokenIdCounter++;
+    function mint(uint256 tokenId) public {
+        // Mint a new 
+        _safeMint(msg.sender, tokenId, 1, "");
     }
 }
