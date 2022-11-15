@@ -8,10 +8,7 @@ import "@openzeppelin/contracts/utils/Strings.sol";
  * @dev Implementation of Arthaus Artist Patron token.
  */
 contract Artist is ERC1155 {
-    // For demonstration purposes, some of these storage variables are set as `public`
-    // This is not necessarily a best practice but makes it easy to call public getters
-
-    /// A URI used to reference off-chain metadata.
+    // A URI used to reference off-chain metadata.
     // This will use the Tableland gateway and query: https://testnet.tableland.network/query?mode=list&s=
     // See the `query?mode=list&s=` appended -- a SQL query `s` and mode to format to ERC721 standard
     string public baseURIString;
@@ -23,9 +20,6 @@ contract Artist is ERC1155 {
     /// The name of the attributes table in Tableland
     // Schema: main_id int not null, trait_type text not null, value text
     string public attributesTable;
-
-    /// A token counter, to track NFT tokenIds
-    uint256 private _tokenIdCounter;
 
     /**
      * @dev Initialize Artist Contract
@@ -50,17 +44,10 @@ contract Artist is ERC1155 {
     }
 
     /**
-     *  @dev Must override the default implementation, which returns an empty string.
-     */
-    function _baseURI() internal view override returns (string memory) {
-        return baseURIString;
-    }
-
-    /**
      *  @dev Must override the default implementation, which simply appends a `tokenId` to _baseURI.
-     *  tokenId - The id of the NFT token that is being requested
+     *  artistId - The id of Arthaus artist
      */
-    function uri(uint256 tokenId)
+    function uri(uint256 artistId)
         public
         view
         virtual
@@ -68,7 +55,7 @@ contract Artist is ERC1155 {
         returns (string memory)
     {
         // Set base URI
-        string memory baseURI = _baseURI();
+        string memory baseURI = baseURIString;
 
         if (bytes(baseURI).length == 0) {
             return "";
@@ -121,10 +108,18 @@ contract Artist is ERC1155 {
     }
 
     /**
+     * @dev Returns the contract OpenSea metadata specifiation.
+     */
+
+    function contractURI() public view returns (string memory) {
+        return "https://storage.googleapis.com/arthaus-cdn/easel/contracts/artist/0.1.0/Artist.json";
+    }
+
+    /**
      * @dev Mint an Artist Patron token - using artist ID as token ID reference. Mints to the sender.
      */
     function mint(uint256 tokenId) public {
-        // Mint a new 
-        _safeMint(msg.sender, tokenId, 1, "");
+        // Mint a new Patron token
+        _mint(msg.sender, tokenId, 1, "");
     }
 }

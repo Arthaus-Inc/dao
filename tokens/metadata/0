@@ -1,15 +1,1 @@
-{
-  "name": "taudalpoi",
-  "description": "arthaus Patron Token",
-  "image": "",
-    "attributes": [
-      {
-        "trait_type": "Country",
-        "value": "Norway"
-      },
-      {
-        "trait_type": "Dominant Style",
-        "value": "Collage"
-      }
-    ]
-  }
+{"name":"taudalpoi","description":"arthaus Patron Token","image":"https://bafkreiezudkooqoehdauvvx2fsgowmthtfpo4w6sfwq5q7osruuvydtbxe.ipfs.nftstorage.link/","attributes":[{"trait_type":"Country","value":"Norway"}]}

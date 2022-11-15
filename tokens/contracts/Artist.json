@@ -1,0 +1,9 @@
+{
+    "name": "arthaus",
+    "description": "𝙖𝙧𝙩𝙝𝙖𝙪𝙨 is the leading prints marketplace for independent artists and their masterpieces.",
+    "image": "https://bafkreibvshzpftnswzkuhteqqtqrh76hwpelmcqms5ensn25f76vzvejwu.ipfs.nftstorage.link",
+    "external_link": "https://dao.myarthaus.com",
+    "seller_fee_basis_points": 8000,
+    "fee_recipient": "0xaD4952Ef0B59ACf9fa0dB1266Ed592c3dE6214CE",
+    "version": "0.1.0"
+  }

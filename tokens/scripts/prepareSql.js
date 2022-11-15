@@ -13,11 +13,13 @@ dotenv.config()
 async function prepareSqlForTwoTables(mainTable, attributesTable) {
 	// Prepare the metadata (handles all of the IPFS-related actions & JSON parsing).
 	const metadata = await prepareMetadata()
+
 	// An array to hold interpolated SQL INSERT statements, using the metadata object's values.
 	const sqlInsertStatements = []
 	for await (let obj of metadata) {
 		// Destructure the metadata values from the passed object
 		const { id, name, description, image, attributes } = obj
+
 		// INSERT statement for a 'main' table that includes some shared data across any NFT
 		// Schema: id int, name text, description text, image text
 		let mainTableStatement = `INSERT INTO ${mainTable} (id, name, description, image) VALUES (${id}, '${name}', '${description}', '${image}');`
@@ -26,6 +28,7 @@ async function prepareSqlForTwoTables(mainTable, attributesTable) {
 		for await (let attribute of attributes) {
 			// Get the attirbutes trait_type & value;
 			const { trait_type, value } = attribute
+
 			// INSERT statement for a separate 'attributes' table that holds attribute data, keyed by the NFT tokenId
 			// Schema: id int, trait_type text, value text
 			const attributesStatement = `INSERT INTO ${attributesTable} (main_id, trait_type, value) VALUES (${id}, '${trait_type}', '${value}');`
@@ -37,6 +40,7 @@ async function prepareSqlForTwoTables(mainTable, attributesTable) {
 			main: mainTableStatement,
 			attributes: attributesTableStatements,
 		}
+		
 		// Note the need above to stringify the attributes
 		sqlInsertStatements.push(statement)
 	}

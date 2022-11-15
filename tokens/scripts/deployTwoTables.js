@@ -1,14 +1,19 @@
 // Standard `ethers` import for chain interaction, `network` for logging, and `run` for verifying contracts
 const { ethers, network } = require("hardhat")
+
 // The script required to upload metadata to IPFS
 const { prepareSqlForTwoTables } = require("./prepareSql")
+
 // Import Tableland
 const { connect } = require("@tableland/sdk")
+
 // Import 'node-fetch' and set globally -- needed for Tableland to work with CommonJS
 const fetch = (...args) => import("node-fetch").then(({ default: fetch }) => fetch(...args))
 globalThis.fetch = fetch
+
 // Optionally, do contract verification (for demo purposes, but this could be as a separate script `verify.js`)
 require("@nomiclabs/hardhat-etherscan")
+
 /**
  * Primary script to deploy the NFT, first pushing images to IPFS and saving the CIDs to a metadata object.
  * Then, creating both a 'main' and 'attributes' metadata table to INSERT metadata into for each NFT token.
@@ -17,19 +22,24 @@ async function main() {
 	// Define the account that will be signing txs for table creates/writes & contract deployment
 	const [signer] = await ethers.getSigners()
 	console.log(`\nDeploying to network '${network.name}' with account ${signer.address}`)
+
 	// Connect to Tableland
 	const tableland = await connect({ signer, chain: "polygon-mumbai" })
+
 	// Define the 'main' table's schema as well as the 'attributes' table; a primary key should exist
 	// Recall that declaring a primary key must have a unique combination of values in its primary key columns
 	const mainSchema = `id int primary key, name text, description text, image text`
+
 	// Should have one `main` row (a token) to many `attributes`, so no need to introduce a primary key constraint
 	const attributesSchema = `main_id int not null, trait_type text not null, value text`
+
 	// Define the (optional) prefix, noting the main & attributes tables
-	const mainPrefix = "table_nft_main"
-	const attributesPrefix = "table_nft_attributes"
+	const mainPrefix = "artist_main"
+	const attributesPrefix = "artist_attributes"
 
 	// Create the main table and retrieve its returned `name` and on-chain tx as `txnHash`
 	const { name: mainName, txnHash: mainTxnHash } = await tableland.create(mainSchema, { prefix: mainPrefix })
+
 	// Wait for the main table to be "officially" created (i.e., tx is included in a block)
 	// If you do not, you could be later be inserting into a non-existent table
 	let receipt = tableland.receipt(mainTxnHash)
@@ -43,6 +53,7 @@ async function main() {
 	const { name: attributesName, txnHash: attributesTxnHash } = await tableland.create(attributesSchema, {
 		prefix: attributesPrefix,
 	})
+
 	// Wait for the attributes table to be "officially" created
 	// If you do not, you could be later be inserting into a non-existent table
 	receipt = tableland.receipt(attributesTxnHash)
@@ -56,6 +67,7 @@ async function main() {
 	// It returns an object with keys `main` (a single statement) and `attributes` (an array of statements)
 	// That is, many `attributes` can be inserted for every 1 entry/row in `main`
 	const sqlInsertStatements = await prepareSqlForTwoTables(mainName, attributesName)
+
 	// Insert metadata into both the 'main' and 'attributes' tables, before smart contract deployment
 	console.log(`\nWriting metadata to tables...`)
 	for await (let statement of sqlInsertStatements) {
@@ -84,28 +96,34 @@ async function main() {
 	// Set the Tableand gateway as the `baseURI` where a `tokenId` will get appended upon `tokenURI` calls
 	// Note that `mode=list` will format the metadata per the ERC721 standard
 	const tablelandBaseURI = `https://testnet.tableland.network/query?mode=list&s=`
-	// Get the contract factory to create an instance of the  TwoTablesNFT contract
-	const TwoTablesNFT = await ethers.getContractFactory("TwoTablesNFT")
+
+	// Get the contract factory to create an instance of the Artist Patron contract
+	const Artist = await ethers.getContractFactory("Artist")
+
 	// Deploy the contract, passing `tablelandBaseURI` in the constructor's `baseURI` and using the Tableland gateway
 	// Also, pass the table's `name` to write to storage in the smart contract
-	const twoTablesNFT = await TwoTablesNFT.deploy(tablelandBaseURI, mainName, attributesName)
+	const artist = await Artist.deploy(tablelandBaseURI, mainName, attributesName)
+
 	// For contract verification purposes, wait for 5 confirmations before proceeeding
 	// Otherwise, just use `await twoTablesNFT.deployed()`
-	await twoTablesNFT.deployTransaction.wait(5)
+	await artist.deployTransaction.wait(5)
 
 	// Log the deployed address and call the getter on `baseURIString` (for demonstration purposes)
-	console.log(`\nTwoTablesNFT contract deployed on ${network.name} at: ${twoTablesNFT.address}`)
-	const baseURI = await twoTablesNFT.baseURIString()
-	console.log(`TwoTablesNFT is using baseURI: ${baseURI}`)
+	console.log(`\nArtist Patron contract deployed on ${network.name} at: ${artist.address}`)
+	const baseURI = await artist.baseURIString()
+	console.log(`Artist Patro is using baseURI: ${baseURI}`)
 
 	// For demonstration purposes, mint a token so that `tokenURI` can be called
-	const mintToken = await twoTablesNFT.mint()
+	const mintToken = await artist.mint(0)
 	const mintTxn = await mintToken.wait()
+
 	// For demonstration purposes, retrieve the event data from the mint to get the minted `tokenId`
 	const mintReceipient = mintTxn.events[0].args[1]
-	const tokenId = mintTxn.events[0].args[2]
-	console.log(`\nNFT minted: tokenId '${tokenId.toNumber()}' to owner '${mintReceipient}'`)
-	const tokenURI = await twoTablesNFT.tokenURI(tokenId)
+	console.log(`\nPatron Token minted: to owner '${mintReceipient}'`)
+
+	// Mint sample artist
+	const tokenId = 0;
+	const tokenURI = await artist.uri(tokenId)
 	console.log(`See an example of 'tokenURI' using token '${tokenId}' here:\n${tokenURI}`)
 
 	// Finally, verify the contract on Polygonscan
@@ -113,13 +131,13 @@ async function main() {
 	try {
 		console.log("\nVerifying contract...")
 		await hre.run("verify:verify", {
-			address: twoTablesNFT.address,
+			address: artist.address,
 			constructorArguments: [tablelandBaseURI, mainName, attributesName],
 		})
 	} catch (err) {
 		if (err.message.includes("Reason: Already Verified")) {
 			console.log(
-				`Contract is already verified! Check it out on Polygonscan: https://mumbai.polygonscan.com/address/${twoTablesNFT.address}`
+				`Contract is already verified! Check it out on Polygonscan: https://mumbai.polygonscan.com/address/${artist.address}`
 			)
 		}
 	}
