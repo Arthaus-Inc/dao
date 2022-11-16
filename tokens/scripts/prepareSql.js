@@ -10,7 +10,7 @@ dotenv.config()
  * @param {string} attributesTable The name of the attributes table in Tableland (id int, trait_type text, value text).
  * @returns {{main: string, attributes: string[]}} SQL statements for metadata table writes.
  */
-async function prepareSqlForTwoTables(mainTable, attributesTable) {
+ async function prepareSqlForEaselTables(mainTable, attributesTable) {
 	// Prepare the metadata (handles all of the IPFS-related actions & JSON parsing).
 	const metadata = await prepareMetadata()
 
@@ -49,4 +49,4 @@ async function prepareSqlForTwoTables(mainTable, attributesTable) {
 	return sqlInsertStatements
 }
 
-module.exports = { prepareSqlForTwoTables }
+module.exports = { prepareSqlForEaselTables }

@@ -1,0 +1,9 @@
+{
+    "number": 1,
+    "total": 1,
+    "artwork_id": 100001,
+    "artifact_source": "NFT", // Print, NFT, Original
+    "artifact_id": "@ethereum/0x39140700d32fef43257f654687ddbb288893d806/573",
+    "date_commissioned": "2022-01-01T00:00:00Z",
+    "url": "https://my.arthaus.site/taudalpoi/artwork/homesick/editions/13cc767a-cacf-4e42-a04e-845b2de58b14"
+}

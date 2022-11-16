@@ -1,8 +1,13 @@
+/*
+ *   Create and Deploy Arthaus Easel Tables
+ */
+
+
 // Standard `ethers` import for chain interaction, `network` for logging, and `run` for verifying contracts
 const { ethers, network } = require("hardhat")
 
 // The script required to upload metadata to IPFS
-const { prepareSqlForTwoTables } = require("./prepareSql")
+const { prepareSqlForEaselTables } = require("./artist/prepareSql")
 
 // Import Tableland
 const { connect } = require("@tableland/sdk")
@@ -93,54 +98,7 @@ async function main() {
 		}
 	}
 
-	// Set the Tableand gateway as the `baseURI` where a `tokenId` will get appended upon `tokenURI` calls
-	// Note that `mode=list` will format the metadata per the ERC721 standard
-	const tablelandBaseURI = `https://testnet.tableland.network/query?mode=list&s=`
-
-	// Get the contract factory to create an instance of the Artist Patron contract
-	const Artist = await ethers.getContractFactory("Artist")
-
-	// Deploy the contract, passing `tablelandBaseURI` in the constructor's `baseURI` and using the Tableland gateway
-	// Also, pass the table's `name` to write to storage in the smart contract
-	const artist = await Artist.deploy(tablelandBaseURI, mainName, attributesName)
-
-	// For contract verification purposes, wait for 5 confirmations before proceeeding
-	// Otherwise, just use `await twoTablesNFT.deployed()`
-	await artist.deployTransaction.wait(5)
-
-	// Log the deployed address and call the getter on `baseURIString` (for demonstration purposes)
-	console.log(`\nArtist Patron contract deployed on ${network.name} at: ${artist.address}`)
-	const baseURI = await artist.baseURIString()
-	console.log(`Artist Patro is using baseURI: ${baseURI}`)
-
-	// For demonstration purposes, mint a token so that `tokenURI` can be called
-	const mintToken = await artist.mint(0)
-	const mintTxn = await mintToken.wait()
-
-	// For demonstration purposes, retrieve the event data from the mint to get the minted `tokenId`
-	const mintReceipient = mintTxn.events[0].args[1]
-	console.log(`\nPatron Token minted: to owner '${mintReceipient}'`)
-
-	// Mint sample artist
-	const tokenId = 0;
-	const tokenURI = await artist.uri(tokenId)
-	console.log(`See an example of 'tokenURI' using token '${tokenId}' here:\n${tokenURI}`)
-
-	// Finally, verify the contract on Polygonscan
-	// This is optional, and instead, can be done is a separate script `verifyTwoTables.js`
-	try {
-		console.log("\nVerifying contract...")
-		await hre.run("verify:verify", {
-			address: artist.address,
-			constructorArguments: [tablelandBaseURI, mainName, attributesName],
-		})
-	} catch (err) {
-		if (err.message.includes("Reason: Already Verified")) {
-			console.log(
-				`Contract is already verified! Check it out on Polygonscan: https://mumbai.polygonscan.com/address/${artist.address}`
-			)
-		}
-	}
+	
 }
 
 main()

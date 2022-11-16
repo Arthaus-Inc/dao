@@ -1,0 +1,4 @@
+/*
+ *   Deploy Artist Smart Contract
+ */
+
