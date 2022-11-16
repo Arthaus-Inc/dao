@@ -17,8 +17,8 @@ contract Artist is ERC1155 {
     // Schema: id int primary key, external_id text, name text, description text, image text, profile text, portfolio text, gallery text
     string public artistsTable;
 
-    /// The name of the attributes table in Tableland
-    // Schema: id int primary key, artist_id int not null, trait_type text not null, value text
+    /// The name of the (artist) attributes table in Tableland
+    // Schema: artist_id int not null, trait_type text not null, value text
     string public attributesTable;
 
     /// The name of the artworks table in Tableland
@@ -26,7 +26,7 @@ contract Artist is ERC1155 {
     string public artworksTable;
 
     /// The name of the editions table in Tableland
-    // Schema: artwork_id int not null, external_id text, number int not null, total not null, artifact_source text not null, artifact_id text not null, url text
+    // Schema: artwork_id int not null, patron_id int not null, external_id text, number int not null, total int not null, artifact_source text not null, artifact_id text not null, url text
     string public editionsTable;
 
     /// The name of the patrons table in Tableland
@@ -99,11 +99,11 @@ contract Artist is ERC1155 {
         string memory query = string(
             abi.encodePacked(
                 "SELECT%20json_object%28%27id%27%2Cid%2C%27name%27%2Cname%2C%27description%27%2Cdescription%2C%27image%27%2Cimage%2C%27attributes%27%2Cjson_group_array%28json_object%28%27trait_type%27%2Ctrait_type%2C%27value%27%2Cvalue%29%29%29%20FROM%20",
-                mainTable,
+                artistsTable,
                 "%20JOIN%20",
                 attributesTable,
                 "%20ON%20",
-                mainTable,
+                artistsTable,
                 "%2Eid%20%3D%20",
                 attributesTable,
                 "%2Emain_id%20WHERE%20id%3D"

@@ -31,10 +31,10 @@ dotenv.config()
 
 		// INSERT statement for a 'main' table that includes some shared data across any NFT
 		// Schema: id int, name text, description text, image text
-		let artistsTable = `INSERT INTO ${artistsTable} (id, name, description, image, external_id, profile, portfolio, gallery) VALUES (${id}, '${name}', '${description}', '${image}', '${art.artist.external_id}', '${art.artist.profile}', '${art.artist.portfolio}', '${art.artist.gallery}');`
+		let artistsTableStatement = `INSERT INTO ${artistsTable} (id, name, description, image, external_id, profile, portfolio, gallery) VALUES (${id}, '${name}', '${description}', '${image}', '${art.artist.external_id}', '${art.artist.profile}', '${art.artist.portfolio}', '${art.artist.gallery}');`
 
 		/*
-		 *   (1) NFT Metadata - Attributes
+		 *   (2) NFT Metadata - Attributes
 		 */
 
 		// Iterate through the attributes and create an INSERT statment for each value, pushed to `attributesTableStatements`
@@ -50,19 +50,38 @@ dotenv.config()
 		}
 
 		/*
-		 *   (2) Easel Table - Arwork
+		 *   (3) Easel Table - Artwork
 		 */
 
 		// INSERT statement for a 'artwork' table
 		// Schema: id int, artist_id int, external_id text, name text, url text
 		let artworksTableStatement = `INSERT INTO ${artworksTable} (id, artist_id, external_id, name, url) VALUES (${art.artwork.id}, '${art.artwork.artist_id}', '${art.artwork.external_id}', '${art.artwork.name}', '${art.artwork.url}');`
 
+		/*
+		 *   (4) Easel Table - Edition
+		 */
+
+		// INSERT statement for a 'edition' table
+		// Schema: id int, artist_id int, external_id text, name text, url text
+		let editionsTableStatement = `INSERT INTO ${editionsTable} (artwork_id, patron_id, external_id, number, total, artifact_source, artifact_id, url) VALUES (${art.edition.artwork_id}, ${art.edition.patron_id}, '${art.edition.external_id}', ${art.edition.number}, ${art.edition.total}, '${art.edition.artifact_source}', '${art.edition.artifact_id}', '${art.edition.url}');`
+
+		/*
+		 *   (5) Easel Table - Patron
+		 */
+
+		// INSERT statement for a 'patron' table
+		// Schema: id int, artist_id int, external_id text, name text, url text
+		let patronsTableStatement = `INSERT INTO ${patronsTable} (id, external_id, name, url) VALUES (${art.patron.id}, '${art.patron.external_id}', '${art.patron.name}', '${art.patron.url}');`
+
+
 
 		// Prepare the statements as a single 'statement' object
 		const statement = {
-			artists: artistsTable,
+			artists: artistsTableStatement,
 			attributes: attributesTableStatements,
-			artworks: artworksTableStatement
+			artworks: artworksTableStatement,
+			editions: editionsTableStatement,
+			patrons: patronsTableStatement
 		}
 		
 		// Note the need above to stringify the attributes
