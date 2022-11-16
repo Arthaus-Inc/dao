@@ -15,16 +15,16 @@ Run hardhat tests, including validating the `tokenURI` works as expected
 npx hardhat test
 ```
 
-Deploy the smart contract locally, running the following in different shells. The `deploy.js` script uploads local files to IPFS and sets the CID to the NFT contract's `baseURI`.
+## Deploy (Dev)
 
-Deploy to live testnets like Polygon Mumbai
+Setup Easel on-chain metadata (via Tableland)
 
 ```console
-npx hardhat run scripts/deploy.js --network polygon-mumbai
+npx hardhat run scripts/deployTables.js --network polygon-mumbai
 ```
 
-And Optionally, instead of verifying the contract in `deployTwoTables.js`, you can do:
+Deploy to Easel contracts to Polygon Mumbai.
 
 ```console
-npx hardhat run scripts/verifyTwoTables.js --network polygon-mumbai
+npx hardhat run scripts/deployTables.js --network polygon-mumbai
 ```

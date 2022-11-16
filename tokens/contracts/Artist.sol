@@ -13,13 +13,28 @@ contract Artist is ERC1155 {
     // See the `query?mode=list&s=` appended -- a SQL query `s` and mode to format to ERC721 standard
     string public baseURIString;
 
-    /// The name of the main metadata table in Tableland
-    // Schema: id int primary key, name text, description text, image text
-    string public mainTable;
+    /// The name of the artists table in Tableland (core token representation)
+    // Schema: id int primary key, external_id text, name text, description text, image text, profile text, portfolio text, gallery text
+    string public artistsTable;
 
     /// The name of the attributes table in Tableland
-    // Schema: main_id int not null, trait_type text not null, value text
+    // Schema: id int primary key, artist_id int not null, trait_type text not null, value text
     string public attributesTable;
+
+    /// The name of the artworks table in Tableland
+    // Schema: id int primary key, artist_id int not null, external_id text, name text, url text
+    string public artworksTable;
+
+    /// The name of the editions table in Tableland
+    // Schema: artwork_id int not null, external_id text, number int not null, total not null, artifact_source text not null, artifact_id text not null, url text
+    string public editionsTable;
+
+    /// The name of the patrons table in Tableland
+    // Schema: id int primary key, external_id text, name text, url text
+    string public patronsTable;
+
+    /// A token counter, to track Artist tokenIds
+    uint256 private _tokenIdCounter;
 
     /**
      * @dev Initialize Artist Contract
@@ -29,7 +44,7 @@ contract Artist is ERC1155 {
      */
     constructor(
         string memory baseURI,
-        string memory _mainTable,
+        string memory _artistsTable,
         string memory _attributesTable
     ) ERC1155("") {
         // Initialize with token counter at zero
@@ -39,7 +54,7 @@ contract Artist is ERC1155 {
         baseURIString = baseURI;
 
         // Set the table names
-        mainTable = _mainTable;
+        artistsTable = _artistsTable;
         attributesTable = _attributesTable;
     }
 
@@ -47,7 +62,7 @@ contract Artist is ERC1155 {
      *  @dev Must override the default implementation, which simply appends a `tokenId` to _baseURI.
      *  artistId - The id of Arthaus artist
      */
-    function uri(uint256 artistId)
+    function uri(uint256 tokenId)
         public
         view
         virtual

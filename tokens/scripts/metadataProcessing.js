@@ -46,7 +46,9 @@ async function uploadImageToIpfs(id, imagesDirPath) {
  */
 async function parseMetadataFile(id, metadataDirPath, imagesDirPath) {
 	// Retrieve CID from uploaded image file
-	const imageCid = await uploadImageToIpfs(id, imagesDirPath)
+	// const imageCid = await uploadImageToIpfs(id, imagesDirPath)
+	const imageCid = 0
+
 	// Find the corresponding metadata file (matching `id`)
 	const metadataFilePath = path.join(metadataDirPath, `${id}`)
 	let metadataFile
@@ -55,10 +57,13 @@ async function parseMetadataFile(id, metadataDirPath, imagesDirPath) {
 	} catch (error) {
 		console.error(`Error reading file in metadata directory: ${id}`)
 	}
+
 	// Parse metatadata buffer (from 'readFile') to an object
 	const metadataJson = JSON.parse(metadataFile.toString())
+
 	// Overwrite the empty 'image' with the IPFS CID at the NFT.Storage gateway
 	metadataJson.image = `https://${imageCid}.ipfs.nftstorage.link/`
+
 	// Write the file to the metadata directory. This is not essential for Tableland
 	// purposes, but it's handy to see what the output looks like for those coming
 	// from background where metadata files are deployed on IPFS, not just images.
@@ -80,9 +85,11 @@ async function parseMetadataFile(id, metadataDirPath, imagesDirPath) {
 async function prepareMetadata() {
 	// An array that contains all metadata objects
 	const finalMetadata = []
+
 	// Set the `metadata` & `images` directory path, holding the metadata files & images
 	const metadataDirPath = path.join(__dirname, "..", "metadata")
 	const imagesDirPath = path.join(__dirname, "..", "images")
+
 	// Retrieve the updated files -- pass the metadata directory and strip off the `metadata` prefix, leaving only the file name
 	const metadataFiles = await getFilesFromPath(metadataDirPath, { pathPrefix: path.resolve(metadataDirPath) })
 	for await (const file of metadataFiles) {

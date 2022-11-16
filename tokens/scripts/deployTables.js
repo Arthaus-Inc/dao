@@ -7,7 +7,7 @@
 const { ethers, network } = require("hardhat")
 
 // The script required to upload metadata to IPFS
-const { prepareSqlForEaselTables } = require("./artist/prepareSql")
+const { prepareSqlForEaselTables } = require("./prepareSql")
 
 // Import Tableland
 const { connect } = require("@tableland/sdk")
@@ -31,72 +31,73 @@ async function main() {
 	// Connect to Tableland
 	const tableland = await connect({ signer, chain: "polygon-mumbai" })
 
-	// Define the 'main' table's schema as well as the 'attributes' table; a primary key should exist
-	// Recall that declaring a primary key must have a unique combination of values in its primary key columns
+	// Main token table - used for primary lookup and token counter assignment
 	const mainSchema = `id int primary key, name text, description text, image text`
 
 	// Should have one `main` row (a token) to many `attributes`, so no need to introduce a primary key constraint
 	const attributesSchema = `main_id int not null, trait_type text not null, value text`
 
 	// Define the (optional) prefix, noting the main & attributes tables
-	const mainPrefix = "artist_main"
-	const attributesPrefix = "artist_attributes"
+	const mainPrefix = "easel_main"
+	const attributesPrefix = "easel_attributes"
+	const artistsPrefix = "easel_artists"
+	const artworksPrefix = "easel_artworks"
+	const editionsTable = "easel_editions"
+	const patronsTable = "easel_patrons"
 
-	// Create the main table and retrieve its returned `name` and on-chain tx as `txnHash`
-	const { name: mainName, txnHash: mainTxnHash } = await tableland.create(mainSchema, { prefix: mainPrefix })
+	// // Create the main table and retrieve its returned `name` and on-chain tx as `txnHash`
+	// const { name: mainName, txnHash: mainTxnHash } = await tableland.create(mainSchema, { prefix: mainPrefix })
 
-	// Wait for the main table to be "officially" created (i.e., tx is included in a block)
-	// If you do not, you could be later be inserting into a non-existent table
-	let receipt = tableland.receipt(mainTxnHash)
-	if (receipt) {
-		console.log(`Table '${mainName}' has been created at tx '${mainTxnHash}'`)
-	} else {
-		throw new Error(`Create table error: could not get '${mainName}' transaction receipt: ${mainTxnHash}`)
-	}
+	// // Wait for the main table to be "officially" created (i.e., tx is included in a block)
+	// // If you do not, you could be later be inserting into a non-existent table
+	// let receipt = tableland.receipt(mainTxnHash)
+	// if (receipt) {
+	// 	console.log(`Table '${mainName}' has been created at tx '${mainTxnHash}'`)
+	// } else {
+	// 	throw new Error(`Create table error: could not get '${mainName}' transaction receipt: ${mainTxnHash}`)
+	// }
 
-	// Create the attributes table and retrieve its returned `name` and on-chain tx as `txnHash`
-	const { name: attributesName, txnHash: attributesTxnHash } = await tableland.create(attributesSchema, {
-		prefix: attributesPrefix,
-	})
+	// // Create the attributes table and retrieve its returned `name` and on-chain tx as `txnHash`
+	// const { name: attributesName, txnHash: attributesTxnHash } = await tableland.create(attributesSchema, {
+	// 	prefix: attributesPrefix,
+	// })
 
-	// Wait for the attributes table to be "officially" created
-	// If you do not, you could be later be inserting into a non-existent table
-	receipt = tableland.receipt(attributesTxnHash)
-	if (receipt) {
-		console.log(`Table '${attributesName}' has been created at tx '${attributesTxnHash}'`)
-	} else {
-		throw new Error(`Create table error: could not get '${attributesName}' transaction receipt: ${attributesTxnHash}`)
-	}
+	// // Wait for the attributes table to be "officially" created
+	// // If you do not, you could be later be inserting into a non-existent table
+	// receipt = tableland.receipt(attributesTxnHash)
+	// if (receipt) {
+	// 	console.log(`Table '${attributesName}' has been created at tx '${attributesTxnHash}'`)
+	// } else {
+	// 	throw new Error(`Create table error: could not get '${attributesName}' transaction receipt: ${attributesTxnHash}`)
+	// }
 
-	// Prepare the SQL INSERT statements, which pass the table names to help prepare the statements
-	// It returns an object with keys `main` (a single statement) and `attributes` (an array of statements)
-	// That is, many `attributes` can be inserted for every 1 entry/row in `main`
-	const sqlInsertStatements = await prepareSqlForTwoTables(mainName, attributesName)
+	// // Prepare the SQL INSERT statements, which pass the table names to help prepare the statements
+	const sqlInsertStatements = await prepareSqlForEaselTables(mainPrefix, attributesPrefix, artistsPrefix, artworksPrefix, editionsTable, patronsTable)
 
-	// Insert metadata into both the 'main' and 'attributes' tables, before smart contract deployment
-	console.log(`\nWriting metadata to tables...`)
-	for await (let statement of sqlInsertStatements) {
-		const { main, attributes } = statement
-		// Call `write` with both INSERT statements; optionally, log it to show some SQL queries
-		// Use `receipt` to make sure everything worked as expected
-		let { hash: mainWriteTx } = await tableland.write(main)
-		receipt = tableland.receipt(mainWriteTx)
-		if (receipt) {
-			console.log(`${mainName} table: ${main}`)
-		} else {
-			throw new Error(`Write table error: could not get '${mainName}' transaction receipt: ${mainWriteTx}`)
-		}
-		// Recall that `attributes` is an array of SQL statements for each `trait_type` and `value` for a `tokenId`
-		for await (let attribute of attributes) {
-			let { hash: attrWriteTx } = await tableland.write(attribute)
-			receipt = tableland.receipt(attrWriteTx)
-			if (receipt) {
-				console.log(`${attributesName} table: ${attribute}`)
-			} else {
-				throw new Error(`Write table error: could not get '${attributesName}' transaction receipt: ${attrWriteTx}`)
-			}
-		}
-	}
+	// // Insert metadata into both the 'main' and 'attributes' tables, before smart contract deployment
+	// console.log(`\nWriting metadata to tables...`)
+	// for await (let statement of sqlInsertStatements) {
+	// 	const { main, attributes } = statement
+	// 	// Call `write` with both INSERT statements; optionally, log it to show some SQL queries
+	// 	// Use `receipt` to make sure everything worked as expected
+	// 	let { hash: mainWriteTx } = await tableland.write(main)
+	// 	receipt = tableland.receipt(mainWriteTx)
+	// 	if (receipt) {
+	// 		console.log(`${mainName} table: ${main}`)
+	// 	} else {
+	// 		throw new Error(`Write table error: could not get '${mainName}' transaction receipt: ${mainWriteTx}`)
+	// 	}
+	// 	// Recall that `attributes` is an array of SQL statements for each `trait_type` and `value` for a `tokenId`
+	// 	for await (let attribute of attributes) {
+	// 		let { hash: attrWriteTx } = await tableland.write(attribute)
+	// 		receipt = tableland.receipt(attrWriteTx)
+	// 		if (receipt) {
+	// 			console.log(`${attributesName} table: ${attribute}`)
+	// 		} else {
+	// 			throw new Error(`Write table error: could not get '${attributesName}' transaction receipt: ${attrWriteTx}`)
+	// 		}
+	// 	}
+	// }
 
 	
 }
