@@ -120,7 +120,7 @@ async function main() {
 	}
 
 	// [e] Create patrons table
-	const { name: patronsName, txnHash: patronsTxHash } = await tableland.create(attributesSchema, {
+	const { name: patronsName, txnHash: patronsTxHash } = await tableland.create(patronsSchema, {
 		prefix: patronsPrefix,
 	})
 

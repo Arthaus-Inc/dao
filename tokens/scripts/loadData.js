@@ -37,36 +37,81 @@ async function main() {
     let rawdata = fs.readFileSync('tables.json');
     let tables = JSON.parse(rawdata);
 
-	// // Prepare the SQL INSERT statements, which pass the table names to help prepare the statements
-	const sqlInsertStatements = await prepareSqlForEaselTables(artistsPrefix, attributesPrefix, artworksPrefix, editionsPrefix, patronsPrefix)
-	console.log(sqlInsertStatements)
+    // Load data - if available
+    if(tables[network.name] && tables[network.name]['artists'] !== "") {
+        // // Prepare the SQL INSERT statements, which pass the table names to help prepare the statements
+        const sqlInsertStatements = await prepareSqlForEaselTables(
+            tables[network.name]['artists'], 
+            tables[network.name]['artist_attributes'],
+            tables[network.name]['artworks'], 
+            tables[network.name]['editions'], 
+            tables[network.name]['patrons'])
+        console.log(sqlInsertStatements)
 
-	// // Insert metadata into both the 'main' and 'attributes' tables, before smart contract deployment
-	// console.log(`\nWriting metadata to tables...`)
-	// for await (let statement of sqlInsertStatements) {
-	// 	const { main, attributes } = statement
-	// 	// Call `write` with both INSERT statements; optionally, log it to show some SQL queries
-	// 	// Use `receipt` to make sure everything worked as expected
-	// 	let { hash: mainWriteTx } = await tableland.write(main)
-	// 	receipt = tableland.receipt(mainWriteTx)
-	// 	if (receipt) {
-	// 		console.log(`${mainName} table: ${main}`)
-	// 	} else {
-	// 		throw new Error(`Write table error: could not get '${mainName}' transaction receipt: ${mainWriteTx}`)
-	// 	}
-	// 	// Recall that `attributes` is an array of SQL statements for each `trait_type` and `value` for a `tokenId`
-	// 	for await (let attribute of attributes) {
-	// 		let { hash: attrWriteTx } = await tableland.write(attribute)
-	// 		receipt = tableland.receipt(attrWriteTx)
-	// 		if (receipt) {
-	// 			console.log(`${attributesName} table: ${attribute}`)
-	// 		} else {
-	// 			throw new Error(`Write table error: could not get '${attributesName}' transaction receipt: ${attrWriteTx}`)
-	// 		}
-	// 	}
-	// }
+        // Insert metadata into all Easel tables prior to Smart Contract deployment
+        console.log(`\nWriting metadata to tables...`)
+        for await (let statement of sqlInsertStatements) {
+            const { artists, attributes, artworks, editions, patrons } = statement
 
-	
+            // /*
+            //  *   (1) Insert Artists (Main Token)
+            //  */
+            // let { hash: artistWriteTx } = await tableland.write(artists)
+            // receipt = tableland.receipt(artistWriteTx)
+            // if (receipt) {
+            //     console.log(`${tables[network.name]['artists']} table: ${artists}`)
+            // } else {
+            //     throw new Error(`Write table error: could not get '${tables[network.name]['artists']}' transaction receipt: ${artistWriteTx}`)
+            // }
+
+            // /*
+            //  *   (2) Insert Artist Attributes
+            //  */
+            // for await (let attribute of attributes) {
+            //     let { hash: attrWriteTx } = await tableland.write(attribute)
+            //     receipt = tableland.receipt(attrWriteTx)
+            //     if (receipt) {
+            //         console.log(`${tables[network.name]['artist_attributes']} table: ${attribute}`)
+            //     } else {
+            //         throw new Error(`Write table error: could not get '${tables[network.name]['artist_attributes']}' transaction receipt: ${attrWriteTx}`)
+            //     }
+            // }
+
+            // /*
+            //  *   (3) Insert Artworks
+            //  */
+            // let { hash: artworkWriteTx } = await tableland.write(artworks)
+            // receipt = tableland.receipt(artworkWriteTx)
+            // if (receipt) {
+            //     console.log(`${tables[network.name]['artworks']} table: ${artworks}`)
+            // } else {
+            //     throw new Error(`Write table error: could not get '${tables[network.name]['artworks']}' transaction receipt: ${artworkWriteTx}`)
+            // }
+
+            // /*
+            //  *   (4) Insert Editions
+            //  */
+            // let { hash: editionsWriteTx } = await tableland.write(editions)
+            // receipt = tableland.receipt(editionsWriteTx)
+            // if (receipt) {
+            //     console.log(`${tables[network.name]['editions']} table: ${editions}`)
+            // } else {
+            //     throw new Error(`Write table error: could not get '${tables[network.name]['editions']}' transaction receipt: ${editionsWriteTx}`)
+            // }
+
+            /*
+             *   (5) Insert Patrons
+             */
+            let { hash: patronsWriteTx } = await tableland.write(patrons)
+            receipt = tableland.receipt(patronsWriteTx)
+            if (receipt) {
+                console.log(`${tables[network.name]['patrons']} table: ${patrons}`)
+            } else {
+                throw new Error(`Write table error: could not get '${tables[network.name]['patrons']}' transaction receipt: ${patronsWriteTx}`)
+            }
+        }
+    }
+
 }
 
 main()

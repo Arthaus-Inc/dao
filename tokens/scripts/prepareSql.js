@@ -45,7 +45,7 @@ dotenv.config()
 
 			// INSERT statement for a separate 'attributes' table that holds attribute data, keyed by the NFT tokenId
 			// Schema: id int, trait_type text, value text
-			const attributesStatement = `INSERT INTO ${attributesTable} (main_id, trait_type, value) VALUES (${id}, '${trait_type}', '${value}');`
+			const attributesStatement = `INSERT INTO ${attributesTable} (artist_id, trait_type, value) VALUES (${id}, '${trait_type}', '${value}');`
 			attributesTableStatements.push(attributesStatement)
 		}
 
