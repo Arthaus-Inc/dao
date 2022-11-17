@@ -51,7 +51,7 @@ async function main() {
 
 	// Easel Table - Edition
 	const editionsPrefix = "easel_editions"
-	const editionsSchema = `artwork_id int not null, patron_id int not null, external_id text, number int not null, total int not null, artifact_source text not null, artifact_id text not null, url text`
+	const editionsSchema = `id int not null, artwork_id int not null, patron_id int not null, external_id text, number int not null, total int not null, artifact_source text not null, artifact_id text not null, url text`
 
 	//  Easel Table - Patron
 	const patronsPrefix = "easel_patrons"
@@ -132,37 +132,6 @@ async function main() {
 	} else {
 		throw new Error(`Create table error: could not get '${patronsName}' transaction receipt: ${patronsTxHash}`)
 	}
-
-	// // Prepare the SQL INSERT statements, which pass the table names to help prepare the statements
-	const sqlInsertStatements = await prepareSqlForEaselTables(artistsPrefix, attributesPrefix, artworksPrefix, editionsPrefix, patronsPrefix)
-	console.log(sqlInsertStatements)
-
-	// // Insert metadata into both the 'main' and 'attributes' tables, before smart contract deployment
-	// console.log(`\nWriting metadata to tables...`)
-	// for await (let statement of sqlInsertStatements) {
-	// 	const { main, attributes } = statement
-	// 	// Call `write` with both INSERT statements; optionally, log it to show some SQL queries
-	// 	// Use `receipt` to make sure everything worked as expected
-	// 	let { hash: mainWriteTx } = await tableland.write(main)
-	// 	receipt = tableland.receipt(mainWriteTx)
-	// 	if (receipt) {
-	// 		console.log(`${mainName} table: ${main}`)
-	// 	} else {
-	// 		throw new Error(`Write table error: could not get '${mainName}' transaction receipt: ${mainWriteTx}`)
-	// 	}
-	// 	// Recall that `attributes` is an array of SQL statements for each `trait_type` and `value` for a `tokenId`
-	// 	for await (let attribute of attributes) {
-	// 		let { hash: attrWriteTx } = await tableland.write(attribute)
-	// 		receipt = tableland.receipt(attrWriteTx)
-	// 		if (receipt) {
-	// 			console.log(`${attributesName} table: ${attribute}`)
-	// 		} else {
-	// 			throw new Error(`Write table error: could not get '${attributesName}' transaction receipt: ${attrWriteTx}`)
-	// 		}
-	// 	}
-	// }
-
-	
 }
 
 main()

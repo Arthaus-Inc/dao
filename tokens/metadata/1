@@ -1,1 +1,47 @@
-{"name":"taudalpoi","description":"arthaus Patron Token for independent artist taudalpoi.","image":"https://0.ipfs.nftstorage.link/","attributes":[{"trait_type":"Country","value":"Norway"},{"trait_type":"Artistic Style","value":"Collage"}],"art":{"artist":{"external_id":"k5UqWnhdyWOgQvcjCjuQYfYDBtE2","profile":"https://my.arthaus.link/taudalpoi","portfolio":"https://my.arthaus.site/taudalpoi","gallery":"https://my.arthaus.app/taudalpoi"},"artwork":{"id":1,"artist_id":1,"external_id":"100001-homesick","name":"Homesick","url":"https://my.arthaus.site/taudalpoi/artwork/homesick"},"edition":{"artwork_id":1,"patron_id":1,"external_id":"13cc767a-cacf-4e42-a04e-845b2de58b14","number":1,"total":1,"artifact_source":"NFT","artifact_id":"@ethereum/0x39140700d32fef43257f654687ddbb288893d806/573","url":"https://my.arthaus.site/taudalpoi/artwork/homesick/editions/13cc767a-cacf-4e42-a04e-845b2de58b14"},"patron":{"id":1,"external_id":"bbf1892a-a01c-4eaa-bec0-174178f93863","name":"Garrett Eastham","url":"https://dao.myarthaus.com/patrons/bbf1892a-a01c-4eaa-bec0-174178f93863"}}}
+{
+  "name": "taudalpoi",
+  "description": "arthaus Patron Token for independent artist taudalpoi.",
+  "image": "https://0.ipfs.nftstorage.link/",
+  "attributes": [
+    {
+      "trait_type": "Country",
+      "value": "Norway"
+    },
+    {
+      "trait_type": "Artistic Style",
+      "value": "Collage"
+    }
+  ],
+  "art": {
+    "artist": {
+      "external_id": "k5UqWnhdyWOgQvcjCjuQYfYDBtE2",
+      "profile": "https://my.arthaus.link/taudalpoi",
+      "portfolio": "https://my.arthaus.site/taudalpoi",
+      "gallery": "https://my.arthaus.app/taudalpoi"
+    },
+    "artwork": {
+      "id": 1,
+      "artist_id": 1,
+      "external_id": "100001-homesick",
+      "name": "Homesick",
+      "url": "https://my.arthaus.site/taudalpoi/artwork/homesick"
+    },
+    "edition": {
+      "id": 1,
+      "artwork_id": 1,
+      "patron_id": 1,
+      "external_id": "13cc767a-cacf-4e42-a04e-845b2de58b14",
+      "number": 1,
+      "total": 1,
+      "artifact_source": "NFT",
+      "artifact_id": "@ethereum/0x39140700d32fef43257f654687ddbb288893d806/573",
+      "url": "https://my.arthaus.site/taudalpoi/artwork/homesick/editions/13cc767a-cacf-4e42-a04e-845b2de58b14"
+    },
+    "patron": {
+      "id": 1,
+      "external_id": "bbf1892a-a01c-4eaa-bec0-174178f93863",
+      "name": "Garrett Eastham",
+      "url": "https://dao.myarthaus.com/patrons/bbf1892a-a01c-4eaa-bec0-174178f93863"
+    }
+  }
+}

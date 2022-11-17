@@ -88,27 +88,27 @@ async function main() {
             //     throw new Error(`Write table error: could not get '${tables[network.name]['artworks']}' transaction receipt: ${artworkWriteTx}`)
             // }
 
-            // /*
-            //  *   (4) Insert Editions
-            //  */
-            // let { hash: editionsWriteTx } = await tableland.write(editions)
-            // receipt = tableland.receipt(editionsWriteTx)
-            // if (receipt) {
-            //     console.log(`${tables[network.name]['editions']} table: ${editions}`)
-            // } else {
-            //     throw new Error(`Write table error: could not get '${tables[network.name]['editions']}' transaction receipt: ${editionsWriteTx}`)
-            // }
+            /*
+             *   (4) Insert Editions
+             */
+            let { hash: editionsWriteTx } = await tableland.write(editions)
+            receipt = tableland.receipt(editionsWriteTx)
+            if (receipt) {
+                console.log(`${tables[network.name]['editions']} table: ${editions}`)
+            } else {
+                throw new Error(`Write table error: could not get '${tables[network.name]['editions']}' transaction receipt: ${editionsWriteTx}`)
+            }
 
             /*
              *   (5) Insert Patrons
              */
-            let { hash: patronsWriteTx } = await tableland.write(patrons)
-            receipt = tableland.receipt(patronsWriteTx)
-            if (receipt) {
-                console.log(`${tables[network.name]['patrons']} table: ${patrons}`)
-            } else {
-                throw new Error(`Write table error: could not get '${tables[network.name]['patrons']}' transaction receipt: ${patronsWriteTx}`)
-            }
+            // let { hash: patronsWriteTx } = await tableland.write(patrons)
+            // receipt = tableland.receipt(patronsWriteTx)
+            // if (receipt) {
+            //     console.log(`${tables[network.name]['patrons']} table: ${patrons}`)
+            // } else {
+            //     throw new Error(`Write table error: could not get '${tables[network.name]['patrons']}' transaction receipt: ${patronsWriteTx}`)
+            // }
         }
     }
 

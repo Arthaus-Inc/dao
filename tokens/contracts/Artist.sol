@@ -26,7 +26,7 @@ contract Artist is ERC1155 {
     string public artworksTable;
 
     /// The name of the editions table in Tableland
-    // Schema: artwork_id int not null, patron_id int not null, external_id text, number int not null, total int not null, artifact_source text not null, artifact_id text not null, url text
+    // Schema: id int not null, artwork_id int not null, patron_id int not null, external_id text, number int not null, total int not null, artifact_source text not null, artifact_id text not null, url text
     string public editionsTable;
 
     /// The name of the patrons table in Tableland

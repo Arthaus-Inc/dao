@@ -63,7 +63,7 @@ dotenv.config()
 
 		// INSERT statement for a 'edition' table
 		// Schema: id int, artist_id int, external_id text, name text, url text
-		let editionsTableStatement = `INSERT INTO ${editionsTable} (artwork_id, patron_id, external_id, number, total, artifact_source, artifact_id, url) VALUES (${art.edition.artwork_id}, ${art.edition.patron_id}, '${art.edition.external_id}', ${art.edition.number}, ${art.edition.total}, '${art.edition.artifact_source}', '${art.edition.artifact_id}', '${art.edition.url}');`
+		let editionsTableStatement = `INSERT INTO ${editionsTable} (id, artwork_id, patron_id, external_id, number, total, artifact_source, artifact_id, url) VALUES (${art.edition.id}, ${art.edition.artwork_id}, ${art.edition.patron_id}, '${art.edition.external_id}', ${art.edition.number}, ${art.edition.total}, '${art.edition.artifact_source}', '${art.edition.artifact_id}', '${art.edition.url}');`
 
 		/*
 		 *   (5) Easel Table - Patron
