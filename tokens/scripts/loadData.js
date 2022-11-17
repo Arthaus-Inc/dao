@@ -53,16 +53,16 @@ async function main() {
         for await (let statement of sqlInsertStatements) {
             const { artists, attributes, artworks, editions, patrons } = statement
 
-            // /*
-            //  *   (1) Insert Artists (Main Token)
-            //  */
-            // let { hash: artistWriteTx } = await tableland.write(artists)
-            // receipt = tableland.receipt(artistWriteTx)
-            // if (receipt) {
-            //     console.log(`${tables[network.name]['artists']} table: ${artists}`)
-            // } else {
-            //     throw new Error(`Write table error: could not get '${tables[network.name]['artists']}' transaction receipt: ${artistWriteTx}`)
-            // }
+            /*
+             *   (1) Insert Artists (Main Token)
+             */
+            let { hash: artistWriteTx } = await tableland.write(artists)
+            let receipt = tableland.receipt(artistWriteTx)
+            if (receipt) {
+                console.log(`${tables[network.name]['artists']} table: ${artists}`)
+            } else {
+                throw new Error(`Write table error: could not get '${tables[network.name]['artists']}' transaction receipt: ${artistWriteTx}`)
+            }
 
             // /*
             //  *   (2) Insert Artist Attributes
@@ -88,16 +88,16 @@ async function main() {
             //     throw new Error(`Write table error: could not get '${tables[network.name]['artworks']}' transaction receipt: ${artworkWriteTx}`)
             // }
 
-            /*
-             *   (4) Insert Editions
-             */
-            let { hash: editionsWriteTx } = await tableland.write(editions)
-            receipt = tableland.receipt(editionsWriteTx)
-            if (receipt) {
-                console.log(`${tables[network.name]['editions']} table: ${editions}`)
-            } else {
-                throw new Error(`Write table error: could not get '${tables[network.name]['editions']}' transaction receipt: ${editionsWriteTx}`)
-            }
+            // /*
+            //  *   (4) Insert Editions
+            //  */
+            // let { hash: editionsWriteTx } = await tableland.write(editions)
+            // receipt = tableland.receipt(editionsWriteTx)
+            // if (receipt) {
+            //     console.log(`${tables[network.name]['editions']} table: ${editions}`)
+            // } else {
+            //     throw new Error(`Write table error: could not get '${tables[network.name]['editions']}' transaction receipt: ${editionsWriteTx}`)
+            // }
 
             /*
              *   (5) Insert Patrons

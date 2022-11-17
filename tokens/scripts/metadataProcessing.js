@@ -46,8 +46,7 @@ async function uploadImageToIpfs(id, imagesDirPath) {
  */
 async function parseMetadataFile(id, metadataDirPath, imagesDirPath) {
 	// Retrieve CID from uploaded image file
-	// const imageCid = await uploadImageToIpfs(id, imagesDirPath)
-	const imageCid = 0
+	const imageCid = await uploadImageToIpfs(id, imagesDirPath)
 
 	// Find the corresponding metadata file (matching `id`)
 	const metadataFilePath = path.join(metadataDirPath, `${id}`)

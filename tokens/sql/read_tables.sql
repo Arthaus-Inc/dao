@@ -1,5 +1,5 @@
 -- Read Artists Table
-SELECT * FROM easel_artists_80001_3927
+SELECT * FROM easel_artists_80001_4003
 
 -- Read Artworks Table
 SELECT * FROM easel_artworks_80001_3929

@@ -24,10 +24,12 @@ contract Artist is ERC1155 {
     /// The name of the artworks table in Tableland
     // Schema: id int primary key, artist_id int not null, external_id text, name text, url text
     string public artworksTable;
+    int private artworkId = 1;
 
     /// The name of the editions table in Tableland
     // Schema: id int not null, artwork_id int not null, patron_id int not null, external_id text, number int not null, total int not null, artifact_source text not null, artifact_id text not null, url text
     string public editionsTable;
+    int private editionId = 1;
 
     /// The name of the patrons table in Tableland
     // Schema: id int primary key, external_id text, name text, url text
@@ -45,7 +47,10 @@ contract Artist is ERC1155 {
     constructor(
         string memory baseURI,
         string memory _artistsTable,
-        string memory _attributesTable
+        string memory _attributesTable,
+        string memory _artworksTable,
+        string memory _editionsTable,
+        string memory _patronsTable
     ) ERC1155("") {
         // Initialize with token counter at zero
         _tokenIdCounter = 0;
@@ -56,6 +61,9 @@ contract Artist is ERC1155 {
         // Set the table names
         artistsTable = _artistsTable;
         attributesTable = _attributesTable;
+        artworksTable = _artistsTable;
+        editionsTable = _editionsTable;
+        patronsTable = _patronsTable;
     }
 
     /**
@@ -92,7 +100,7 @@ contract Artist is ERC1155 {
          *       )
          *   )
          *   FROM {mainTable} JOIN {attributesTable}
-         *       ON {mainTable}.id = {attributesTable}.main_id
+         *       ON {mainTable}.id = {attributesTable}.artist_id
          *   WHERE id = <main_id>
          *   GROUP BY id
          */
@@ -106,7 +114,7 @@ contract Artist is ERC1155 {
                 artistsTable,
                 "%2Eid%20%3D%20",
                 attributesTable,
-                "%2Emain_id%20WHERE%20id%3D"
+                "%artist_id%20WHERE%20id%3D"
             )
         );
         // Return the baseURI with a query string, which looks up the token id in a row.
@@ -133,8 +141,10 @@ contract Artist is ERC1155 {
     /**
      * @dev Mint an Artist Patron token - using artist ID as token ID reference. Mints to the sender.
      */
-    function mint(uint256 tokenId) public {
+    function mint(address recipient, uint256 artistId) public {
         // Mint a new Patron token
-        _mint(msg.sender, tokenId, 1, "");
+        _mint(recipient, artistId, 1, "");
     }
+
+
 }

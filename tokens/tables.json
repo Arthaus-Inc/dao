@@ -7,6 +7,7 @@
         "patrons": ""
     },
     "polygon-mumbai": {
+        "contract": "0x91a6507f1c6645e0bb873BBb4F8Dbe1eF3e12E4C",
         "artists": "easel_artists_80001_3927",
         "artist_attributes": "easel_artist_attributes_80001_3928",
         "artworks": "easel_artworks_80001_3929",
